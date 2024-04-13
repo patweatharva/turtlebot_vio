@@ -3,14 +3,41 @@ project(turtlebot_vio)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
+add_compile_options(-std=c++14)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+    roscpp 
+    rospy 
+    std_msgs 
+    genmsg
+    tf
+    nav_msgs
+    sensor_msgs
+    geometry_msgs
+    eigen_conversions
+    tf_conversions
+    random_numbers
+    message_generation
+    # pcl_conversions
+    # pcl_ros
+    std_srvs
+    # laser_geometry
+)
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+# find_package(PCL REQUIRED)
+
+find_package(GTSAMCMakeTools)
+find_package(GTSAM REQUIRED)
+find_package(OpenCV REQUIRED)
+
+find_package(Eigen3 REQUIRED)
+
+## System dependencies are found with CMake's conventions
+find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -99,6 +126,11 @@ find_package(catkin REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
+    CATKIN_DEPENDS
+    roscpp
+    std_msgs
+    sensor_msgs
+    # pcl_ros
 #  INCLUDE_DIRS include
 #  LIBRARIES turtlebot_vio
 #  CATKIN_DEPENDS other_catkin_pkg
@@ -112,10 +144,19 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
-# ${catkin_INCLUDE_DIRS}
+include
+${catkin_INCLUDE_DIRS}
+# ${PCL_INCLUDE_DIRS}
+${GTSAM_INCLUDE_DIRS}
+${EIGEN3_INCLUDE_DIRS}
+${Boost_INCLUDE_DIRS}
+${OPENCV_INCLUDE_DIRS}
+# /usr/include/pcl-1.10/
+/usr/include/eigen3/
+
 )
 
+link_directories(${OpenCV_LIBRARY_DIRS})
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/turtlebot_vio.cpp
@@ -129,7 +170,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/turtlebot_vio_node.cpp)
+add_executable(image_processing_node src/image_processing_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -142,9 +183,14 @@ include_directories(
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(image_processing_node
+  ${catkin_LIBRARIES}
+#   ${PCL_LIBRARIES}
+  ${Boost_LIBRARIES}
+  ${GTSAM_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+
+)
 
 #############
 ## Install ##
@@ -162,9 +208,8 @@ include_directories(
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
-# install(TARGETS ${PROJECT_NAME}_node
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+install(TARGETS image_processing_node
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 ## Mark libraries for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html
