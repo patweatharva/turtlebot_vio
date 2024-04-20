@@ -25,6 +25,9 @@ find_package(catkin REQUIRED COMPONENTS
     # pcl_ros
     std_srvs
     # laser_geometry
+    cv_bridge
+    roscpp
+    image_transport
 )
 
 ## System dependencies are found with CMake's conventions
@@ -32,7 +35,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(GTSAMCMakeTools)
 find_package(GTSAM REQUIRED)
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 4.9.0 REQUIRED)
 
 find_package(Eigen3 REQUIRED)
 
@@ -70,11 +73,11 @@ find_package(Boost REQUIRED COMPONENTS system)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  Keypoint2D.msg
+  Keypoint2DArray.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -91,10 +94,10 @@ find_package(Boost REQUIRED COMPONENTS system)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -130,6 +133,7 @@ catkin_package(
     roscpp
     std_msgs
     sensor_msgs
+    message_runtime
     # pcl_ros
 #  INCLUDE_DIRS include
 #  LIBRARIES turtlebot_vio
