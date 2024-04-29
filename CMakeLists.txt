@@ -33,8 +33,13 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 # find_package(PCL REQUIRED)
 
+# Include GTSAM CMake tools
 find_package(GTSAMCMakeTools)
+#include(GtsamBuildTypes) # Load build type flags and default to Debug mode
+#include(GtsamTesting)    # Easy functions for creating unit tests and scripts
+#include(GtsamMatlabWrap) # Automatic MATLAB wrapper generation
 find_package(GTSAM REQUIRED)
+
 find_package(OpenCV 4.9.0 REQUIRED)
 
 find_package(Eigen3 REQUIRED)
@@ -129,11 +134,14 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
+    INCLUDE_DIRS
     CATKIN_DEPENDS
     roscpp
     std_msgs
     sensor_msgs
     message_runtime
+    image_transport
+    cv_bridge
     # pcl_ros
 #  INCLUDE_DIRS include
 #  LIBRARIES turtlebot_vio
@@ -157,10 +165,12 @@ ${Boost_INCLUDE_DIRS}
 ${OPENCV_INCLUDE_DIRS}
 # /usr/include/pcl-1.10/
 /usr/include/eigen3/
+/usr/local/include
 
 )
 
 link_directories(${OpenCV_LIBRARY_DIRS})
+link_directories(${GTSAM_LIBRARY_DIRS})
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/turtlebot_vio.cpp
@@ -175,6 +185,7 @@ link_directories(${OpenCV_LIBRARY_DIRS})
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(image_processing_node src/image_processing_node.cpp)
+add_executable(graph_vio_node src/graph_vio_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -196,6 +207,15 @@ target_link_libraries(image_processing_node
 
 )
 
+target_link_libraries(graph_vio_node
+  ${catkin_LIBRARIES}
+  ${Boost_LIBRARIES}
+  ${GTSAM_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  gtsam
+
+)
+
 #############
 ## Install ##
 #############
@@ -212,7 +232,7 @@ target_link_libraries(image_processing_node
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
-install(TARGETS image_processing_node
+install(TARGETS image_processing_node graph_vio_node
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 ## Mark libraries for installation
