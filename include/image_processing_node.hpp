@@ -32,7 +32,7 @@ struct imageData
     std::map<int, std::vector<cv::DMatch>> matchingMap;
 
     // // Following field is stored solely for debug purpose (Kindly remove while actual implementataion)
-    cv::Mat img;
+    // cv::Mat img;
 };
 
 class imgBuffer
@@ -158,8 +158,8 @@ public:
     imageHandler(ros::NodeHandle &nh, double thresholdTime, double thresholdOdometry)
         : nh_(nh), thresholdTime_(thresholdTime), thresholdOdometry_(thresholdOdometry), buffer_(3)
     {
-        odom_sub_ = nh.subscribe("/odom", 1, &imageHandler::imuCallback, this);
-        img_in_ = nh.subscribe("/turtlebot/kobuki/realsense/color/image_color", 1, &imageHandler::imgCallback, this);
+        odom_sub_ = nh.subscribe("/odom", 10, &imageHandler::imuCallback, this);
+        img_in_ = nh.subscribe("/turtlebot/kobuki/realsense/color/image_color", 10, &imageHandler::imgCallback, this);
 
         // Initialize feature detector and matcher
         detector_ = cv::ORB::create(250, 1.2f, 8, 31, 0, 2, cv::ORB::HARRIS_SCORE, 31, 20);
@@ -213,13 +213,13 @@ void imageHandler::imgCallback(const sensor_msgs::ImageConstPtr &msg)
 
         cv::Mat img = cv_ptr->image;
 
-        std::string originalImagePath = directory_ + "/original_" + std::to_string(current_frame_ID) + ".png";
-        cv::imwrite(originalImagePath, img);
+        // std::string originalImagePath = directory_ + "/original_" + std::to_string(current_frame_ID) + ".png";
+        // cv::imwrite(originalImagePath, img);
 
         imagePreprocessing(img);
 
-        std::string processedImagePath = directory_ + "/processed_" + std::to_string(current_frame_ID) + ".png";
-        cv::imwrite(processedImagePath, img);
+        // std::string processedImagePath = directory_ + "/processed_" + std::to_string(current_frame_ID) + ".png";
+        // cv::imwrite(processedImagePath, img);
 
         ROS_INFO("-------Frame (ID- %d) : Captured and Processed Successfully-------", current_frame_ID);
 
@@ -263,7 +263,7 @@ void imageHandler::detectAndMatchFeatures(cv::Mat &img)
     const float ratio_thresh = 0.7f;
     imageData newFrameInfo;
     newFrameInfo.frameID = current_frame_ID;
-    newFrameInfo.img = img.clone();
+    // newFrameInfo.img = img.clone();
 
     detector_->detectAndCompute(img, cv::noArray(), newFrameInfo.keypoints, newFrameInfo.descriptors);
 
@@ -314,7 +314,7 @@ void imageHandler::detectAndMatchFeatures(cv::Mat &img)
     }
 
     // Following block is solely for debug purpose (Kindly remove while actual implementataion)
-
+    /*
     for (int i = 0; i < buffer_.getNumberofMembers(); ++i)
     {
         imageData frameData = buffer_.get(i);
@@ -331,6 +331,7 @@ void imageHandler::detectAndMatchFeatures(cv::Mat &img)
         std::string visualizationPath = directory_ + "/matches_" + std::to_string(current_frame_ID) + "_" + std::to_string(frameData.frameID) + ".png";
         cv::imwrite(visualizationPath, img_matches);
     }
+    */
 
     // Store the current frame information
     buffer_.push(newFrameInfo);
@@ -384,15 +385,15 @@ void imageHandler::ransac()
 
                 // Following block is solely for debug purpose (Kindly remove while actual implementataion)
 
-                std::vector<cv::DMatch> matches = currentFrameData.matchingMap[frameData.frameID];
+                // std::vector<cv::DMatch> matches = currentFrameData.matchingMap[frameData.frameID];
 
-                // Draw matches
-                cv::Mat img_matches;
-                cv::drawMatches(currentFrameData.img, currentFrameData.keypoints, frameData.img, frameData.keypoints, matches, img_matches);
+                // // Draw matches
+                // cv::Mat img_matches;
+                // cv::drawMatches(currentFrameData.img, currentFrameData.keypoints, frameData.img, frameData.keypoints, matches, img_matches);
 
-                // Save the visualized matches
-                std::string visualizationPath = directory_ + "/matches_after_ransac" + std::to_string(current_frame_ID) + "_" + std::to_string(frameData.frameID) + ".png";
-                cv::imwrite(visualizationPath, img_matches);
+                // // Save the visualized matches
+                // std::string visualizationPath = directory_ + "/matches_after_ransac" + std::to_string(current_frame_ID) + "_" + std::to_string(frameData.frameID) + ".png";
+                // cv::imwrite(visualizationPath, img_matches);
             }
             else
             {
