@@ -62,6 +62,7 @@
   <depend>nav_msgs</depend>
   <depend>image_transport</depend>
   <depend>gtsam</depend>
+  <!-- <depend>turtlebot_graph_slam</depend> -->
   <!-- <depend>pcl_conversions</depend> -->
   <!-- <depend>pcl_ros</depend> -->
   <depend>std_srvs</depend>

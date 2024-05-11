@@ -29,7 +29,8 @@ find_package(catkin REQUIRED COMPONENTS
     roscpp
     image_transport
 )
-
+# find_package(turtlebot_graph_slam REQUIRED)
+# include_directories(${turtlebot_graph_slam_INCLUDE_DIRS})
 ## System dependencies are found with CMake's conventions
 # find_package(PCL REQUIRED)
 
@@ -195,7 +196,7 @@ add_executable(graph_vio_node src/graph_vio_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(graph_vio_node ${turtlebot_graph_slam_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(image_processing_node
