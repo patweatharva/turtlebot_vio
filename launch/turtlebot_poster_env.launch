@@ -22,6 +22,6 @@
     <node pkg="turtlebot_vio" type="graph_vio_node" name="graph_vio_node"/>
 
     <!-- Image Processing Node (Feature Extraction) -->
-    <!-- <node pkg="turtlebot_vio" type="image_processing_node" name="image_processing_node"/> -->
+    <node pkg="turtlebot_vio" type="image_processing_node" name="image_processing_node"/>
 
 </launch>
